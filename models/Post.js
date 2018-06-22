@@ -23,7 +23,7 @@ const PostSchema = new Schema({
     // here the likes are counted on the basis of user id and also one user can make one like only
     {
       user: {
-        type: Schema.Types.ObjectId,
+        type: Schema.Types.ObjectId, // it will give the user id
         ref: "users"
       }
     }

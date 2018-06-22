@@ -26,7 +26,7 @@ router.get(
     const errors = {};
 
     Profile.findOne({ user: req.user.id })
-      .populate("user", ["name", "avatar"]) // acces the data from users schema model
+      .populate("user", ["name", "avatar"]) // acces the data from users schema model,there is ref in profile model
       .then(profile => {
         if (!profile) {
           errors.noProfile = "there is no profile for this user";
