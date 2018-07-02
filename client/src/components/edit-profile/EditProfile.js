@@ -1,12 +1,13 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { withRouter } from "react-router-dom";
+import { withRouter, Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import TextFieldGroup from "../common/TextFieldGroup";
 import InputGroup from "../common/InputGroup";
 import TextAreaField from "../common/TextAreaField";
 import SelectListGroup from "../common/SelectListGroup";
-import { createProfile } from "../../actions/profileActions";
+import { createProfile, getCurrentProfile } from "../../actions/profileActions";
+import isEmpty from "../../validation/is-empty";
 
 class CreateProfile extends Component {
   constructor(props) {
@@ -32,9 +33,63 @@ class CreateProfile extends Component {
     this.onSubmit = this.onSubmit.bind(this);
   }
 
+  componentDidMount() {
+    this.props.getCurrentProfile();
+  }
+
   componentWillReceiveProps(nextProps) {
     if (nextProps.errors) {
       this.setState({ errors: nextProps.errors });
+    }
+    // here filling the field value
+    if (nextProps.profile.profile) {
+      const profile = nextProps.profile.profile;
+
+      //bring skills array back to comma seperated value
+      const skillsCSV = profile.skills.join(",");
+
+      // if profile filed is doesnt exist ,make  it empty string
+
+      profile.company = !isEmpty(profile.company) ? profile.company : "";
+      profile.website = !isEmpty(profile.website) ? profile.website : "";
+      profile.location = !isEmpty(profile.location) ? profile.location : "";
+      profile.gitHubUserName = !isEmpty(profile.gitHubUserName)
+        ? profile.gitHubUserName
+        : "";
+      profile.bio = !isEmpty(profile.bio) ? profile.bio : "";
+      profile.social = !isEmpty(profile.social) ? profile.social : {};
+      profile.twitter = !isEmpty(profile.social.twitter)
+        ? profile.social.twitter
+        : "";
+      profile.youtube = !isEmpty(profile.social.youtube)
+        ? profile.social.youtube
+        : "";
+      profile.instagram = !isEmpty(profile.social.instagram)
+        ? profile.social.instagram
+        : "";
+      profile.facebook = !isEmpty(profile.social.facebook)
+        ? profile.social.facebook
+        : "";
+      profile.linkedin = !isEmpty(profile.social.linkedin)
+        ? profile.social.linkedin
+        : "";
+
+      // set component fileds state
+      this.setState({
+        handle: profile.handle,
+        company: profile.company,
+        website: profile.website,
+        location: profile.location,
+        gitHubUserName: profile.gitHubUserName,
+        bio: profile.bio,
+        status: profile.status,
+        skills: skillsCSV,
+        twitter: profile.twitter,
+        facebook: profile.facebook,
+        youtube: profile.youtube,
+        linkedin: profile.linkedin,
+        instagram: profile.instagram
+      });
     }
   }
 
@@ -133,10 +188,10 @@ class CreateProfile extends Component {
       <div className="create-profile">
         <div className="container">
           <div className="col-md-8 m-auto">
-            <div className="display-4 text-center">Create Your Profile</div>
-            <p className="lead text-center">
-              Let's get some information to make your profile stand out
-            </p>
+            <Link to="/dashboard" className="btn btn-light">
+              Go Back
+            </Link>
+            <div className="display-4 text-center">Edit Profile</div>
             <small className="d-block pb-3">* = required field</small>
             <form onSubmit={this.onSubmit}>
               <TextFieldGroup
@@ -235,6 +290,8 @@ class CreateProfile extends Component {
 }
 
 CreateProfile.propTypes = {
+  createProfile: PropTypes.func.isRequired,
+  getCurrentProfile: PropTypes.func.isRequired,
   profile: PropTypes.object.isRequired,
   errors: PropTypes.object.isRequired
 };
@@ -246,5 +303,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { createProfile }
+  { createProfile, getCurrentProfile }
 )(withRouter(CreateProfile));
